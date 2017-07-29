@@ -68,7 +68,7 @@ public class RWilcoxon {
       os.write("resultDirectory<-\"" + dataDirectory + "\"" + "\n");
       output = "latexHeader <- function() {" + "\n" +
               "  write(\"\\\\documentclass{article}\", \"" + texFile + "\", append=TRUE)" + "\n" +
-              "  write(\"\\\\title{StandardStudy}\", \"" + texFile + "\", append=TRUE)" + "\n" +
+              "  write(\"\\\\title{StandardStudyTest}\", \"" + texFile + "\", append=TRUE)" + "\n" +
               "  write(\"\\\\usepackage{amssymb}\", \"" + texFile + "\", append=TRUE)" + "\n" +
               "  write(\"\\\\author{A.J.Nebro}\", \"" + texFile + "\", append=TRUE)" + "\n" +
               "  write(\"\\\\begin{document}\", \"" + texFile + "\", append=TRUE)" + "\n" +

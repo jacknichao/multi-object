@@ -75,7 +75,7 @@ public class NSGAIIAdaptive_Settings extends Settings {
     crossoverDistributionIndex_  = 20 ;
     CR_                          = 1.0 ;
     F_                           = 0.5 ;
-  } // NSGAII_Settings
+  } // NSGAII_SettingsTest
 
 
   /**

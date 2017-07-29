@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package jmetal.experiments.studies;
+package jmetal.nichao;
 
 import jmetal.core.Algorithm;
 import jmetal.experiments.Experiment;
@@ -38,7 +38,7 @@ import java.util.logging.Logger;
  * The experiment consisting in studying the effect of the crossover probability
  * in NSGA-II.
  */
-public class NSGAIIStudy extends Experiment {
+public class NSGAIIStudyTest extends Experiment {
   /**
    * Configures the algorithms in each independent run
    * @param problemName The problem to solve
@@ -79,16 +79,16 @@ public class NSGAIIStudy extends Experiment {
         algorithm[i] = new NSGAII_Settings(problemName).configure(parameters[i]);
       
     } catch (IllegalArgumentException ex) {
-      Logger.getLogger(NSGAIIStudy.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(NSGAIIStudyTest.class.getName()).log(Level.SEVERE, null, ex);
     } catch (IllegalAccessException ex) {
-      Logger.getLogger(NSGAIIStudy.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(NSGAIIStudyTest.class.getName()).log(Level.SEVERE, null, ex);
     } catch (JMException ex) {
-      Logger.getLogger(NSGAIIStudy.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(NSGAIIStudyTest.class.getName()).log(Level.SEVERE, null, ex);
     }
   } // algorithmSettings
   
   public static void main(String[] args) throws JMException, IOException {
-    NSGAIIStudy exp = new NSGAIIStudy() ; // exp = experiment
+    NSGAIIStudyTest exp = new NSGAIIStudyTest() ; // exp = experiment
     
     exp.experimentName_  = "NSGAIIStudyTest" ;
     exp.algorithmNameList_   = new String[] {

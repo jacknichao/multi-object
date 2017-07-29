@@ -96,8 +96,8 @@ public class FeatureSelection extends Problem {
             seventyPercent = new Instances(all, 0, index);
             thirtyPercent = new Instances(all, index, all.numInstances() - index);
             //将当前实验的训练集合、测试集合保存起来，以便后续在测试集合上进行验证
-            ConverterUtils.DataSink.write("results/seventyPercent.arff", seventyPercent);
-            ConverterUtils.DataSink.write("results/thirtyPercent.arff", thirtyPercent);
+           // ConverterUtils.DataSink.write("results/seventyPercent.arff", seventyPercent);
+           // ConverterUtils.DataSink.write("results/thirtyPercent.arff", thirtyPercent);
         } catch (Exception e) {
             e.printStackTrace();
         }

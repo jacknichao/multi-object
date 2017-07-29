@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package jmetal.experiments.studies;
+package jmetal.nichao;
 
 import jmetal.core.Algorithm;
 import jmetal.experiments.Experiment;
@@ -38,7 +38,7 @@ import java.util.logging.Logger;
  * compared when solving the ZDT, DTLZ, and WFG benchmarks, and the hypervolume,
  * spread and additive epsilon indicators are used for performance assessment.
  */
-public class StandardStudy extends Experiment {
+public class StandardStudyTest extends Experiment {
 
   /**
    * Configures the algorithms in each independent run
@@ -63,17 +63,17 @@ public class StandardStudy extends Experiment {
           parameters[i].put("paretoFrontFile_", paretoFrontFile_[problemIndex]);
         } // if
 
-        algorithm[0] = new NSGAII_Settings(problemName).configure(parameters[0]);
+        algorithm[0] = new NSGAII_SettingsTest(problemName).configure(parameters[0]);
         algorithm[1] = new SPEA2_Settings(problemName).configure(parameters[1]);
         algorithm[2] = new MOCell_Settings(problemName).configure(parameters[2]);
         algorithm[3] = new SMPSO_Settings(problemName).configure(parameters[3]);
         algorithm[4] = new GDE3_Settings(problemName).configure(parameters[4]);
       } catch (IllegalArgumentException ex) {
-      Logger.getLogger(StandardStudy.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(StandardStudyTest.class.getName()).log(Level.SEVERE, null, ex);
     } catch (IllegalAccessException ex) {
-      Logger.getLogger(StandardStudy.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(StandardStudyTest.class.getName()).log(Level.SEVERE, null, ex);
     } catch  (JMException ex) {
-      Logger.getLogger(StandardStudy.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(StandardStudyTest.class.getName()).log(Level.SEVERE, null, ex);
     }
   } // algorithmSettings
 
@@ -84,7 +84,7 @@ public class StandardStudy extends Experiment {
    * @throws IOException
    */
   public static void main(String[] args) throws JMException, IOException {
-    StandardStudy exp = new StandardStudy();
+    StandardStudyTest exp = new StandardStudyTest();
 
     exp.experimentName_ = "StandardStudyTest";
     exp.algorithmNameList_ = new String[]{

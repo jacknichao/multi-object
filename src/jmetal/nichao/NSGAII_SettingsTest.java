@@ -1,9 +1,10 @@
-//  NSGAIIRandom_Settings.java
+//  NSGAII_Settings.java 
 //
 //  Authors:
 //       Antonio J. Nebro <antonio@lcc.uma.es>
+//       Juan J. Durillo <durillo@lcc.uma.es>
 //
-//  Copyright (c) 2013 Antonio J. Nebro
+//  Copyright (c) 2011 Antonio J. Nebro, Juan J. Durillo
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published by
@@ -18,116 +19,141 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package jmetal.experiments.settings;
+package jmetal.nichao;
 
 import jmetal.core.Algorithm;
 import jmetal.experiments.Settings;
-import jmetal.metaheuristics.nsgaII.NSGAIIRandom;
+import jmetal.metaheuristics.nsgaII.NSGAII;
+import jmetal.operators.crossover.Crossover;
+import jmetal.operators.crossover.CrossoverFactory;
+import jmetal.operators.mutation.Mutation;
+import jmetal.operators.mutation.MutationFactory;
 import jmetal.operators.selection.Selection;
 import jmetal.operators.selection.SelectionFactory;
 import jmetal.problems.ProblemFactory;
 import jmetal.util.JMException;
-import jmetal.util.offspring.DifferentialEvolutionOffspring;
-import jmetal.util.offspring.Offspring;
-import jmetal.util.offspring.PolynomialMutationOffspring;
-import jmetal.util.offspring.SBXCrossoverOffspring;
 
 import java.util.HashMap;
 import java.util.Properties;
 
 /**
- * Settings class of algorithm NSGAIIRandom
- * Reference: Antonio J. Nebro, Juan José Durillo, Mirialys Machin Navas, Carlos A. Coello Coello, Bernabé Dorronsoro:
- * A Study of the Combination of Variation Operators in the NSGA-II Algorithm.
- * CAEPIA 2013: 269-278
- * DOI: http://dx.doi.org/10.1007/978-3-642-40643-0_28
+ * Settings class of algorithm NSGA-II (real encoding)
  */
-public class NSGAIIRandom_Settings extends Settings {
+public class NSGAII_SettingsTest extends Settings {
   public int populationSize_                 ;
   public int maxEvaluations_                 ;
   public double mutationProbability_         ;
   public double crossoverProbability_        ;
   public double mutationDistributionIndex_   ;
   public double crossoverDistributionIndex_  ;
-  public double CR_                          ;
-  public double F_                           ;
+
 
   /**
+   * 保存需要验证的数据集
+   *//*
+  public String projectName="";
+
+  *//**
+   * 设置需要验证的数据集
+   * @param path
+   *//*
+  public void setProjectName(String path){
+    this.projectName=path;
+  }*/
+  /**
    * Constructor
-   * @throws jmetal.util.JMException
    */
-  public NSGAIIRandom_Settings(String problem) throws JMException {
-    super(problem) ;
-    
+  public NSGAII_SettingsTest(String problemName) {
+    super(problemName) ;
+    String projectName="D:\\testinput\\Relink\\Apache.arff";
+    //这里需要实例化我们自己的Problem
+    problem_=new FeatureSelection("Binary",projectName);
+
+    /*
     Object [] problemParams = {"Real"};
     try {
 	    problem_ = (new ProblemFactory()).getProblem(problemName_, problemParams);
     } catch (JMException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();
-    }  
-    // Default settings
+    }
+    */
+    // Default experiments.settings
     populationSize_              = 100   ;
-    maxEvaluations_              = 150000 ;
+    maxEvaluations_              = 250 ;
     mutationProbability_         = 1.0/problem_.getNumberOfVariables() ;
-    crossoverProbability_        = 0.9 ;
-    mutationDistributionIndex_   = 20 ;
-    crossoverDistributionIndex_  = 20 ;
-    CR_                          = 1.0 ;
-    F_                           = 0.5 ;
+    crossoverProbability_        = 0.9   ;
+    mutationDistributionIndex_   = 20.0  ;
+    crossoverDistributionIndex_  = 20.0  ;
   } // NSGAII_SettingsTest
 
-  
+
   /**
-   * Configure NSGAII with user-defined parameter settings
+   * Configure NSGAII with default parameter experiments.settings
    * @return A NSGAII algorithm object
-   * @throws jmetal.util.JMException
+   * @throws JMException
    */
   public Algorithm configure() throws JMException {
     Algorithm algorithm ;
     Selection  selection ;
+    Crossover  crossover ;
+    Mutation   mutation  ;
 
     HashMap  parameters ; // Operator parameters
-    
-    algorithm = new NSGAIIRandom(problem_) ;
-    
+
+    // Creating the algorithm. There are two choices: NSGAII and its steady-
+    // state variant ssNSGAII
+    algorithm = new NSGAII(problem_) ;
+    //algorithm = new ssNSGAII(problem_) ;
+
     // Algorithm parameters
     algorithm.setInputParameter("populationSize",populationSize_);
     algorithm.setInputParameter("maxEvaluations",maxEvaluations_);
 
-    Offspring[] getOffspring = new Offspring[3];
-    double CR, F;
-    getOffspring[0] = new DifferentialEvolutionOffspring(CR_, F_);
+    // Mutation and Crossover for Real codification
+    parameters = new HashMap() ;
+    parameters.put("probability", crossoverProbability_) ;
+    parameters.put("distributionIndex", crossoverDistributionIndex_) ;
+   //这个交叉编译不适合
+   // crossover = CrossoverFactory.getCrossoverOperator("SBXCrossover", parameters);
+    crossover = CrossoverFactory.getCrossoverOperator("SinglePointCrossover", parameters);
 
-    getOffspring[1] = new SBXCrossoverOffspring(crossoverProbability_, crossoverDistributionIndex_);
+    parameters = new HashMap() ;
+    parameters.put("probability", mutationProbability_) ;
+    parameters.put("distributionIndex", mutationDistributionIndex_) ;
+  //这个编译也是不合适的  ,只有BitFlipMutation这么一个编译算子支持BinaryType
+//    mutation = MutationFactory.getMutationOperator("PolynomialMutation", parameters);
+    mutation = MutationFactory.getMutationOperator("BitFlipMutation", parameters);
 
-    getOffspring[2] = new PolynomialMutationOffspring(mutationProbability_, mutationDistributionIndex_);
-
-    algorithm.setInputParameter("offspringsCreators", getOffspring);
-
-    // Selection Operator 
+    // Selection Operator
     parameters = null ;
-    selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters) ;     
+    selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters) ;
 
     // Add the operators to the algorithm
+    algorithm.addOperator("crossover",crossover);
+    algorithm.addOperator("mutation",mutation);
     algorithm.addOperator("selection",selection);
-    
+
     return algorithm ;
   } // configure
 
-  /**
-   * Configure NSGAIIRandom with user-defined parameter experiments.settings
-   * @return A NSGAIIRandom algorithm object
-   */
+ /**
+  * Configure NSGAII with user-defined parameter experiments.settings
+  * @return A NSGAII algorithm object
+  */
   @Override
   public Algorithm configure(Properties configuration) throws JMException {
     Algorithm algorithm ;
     Selection  selection ;
+    Crossover  crossover ;
+    Mutation   mutation  ;
 
     HashMap  parameters ; // Operator parameters
 
-    // Creating the algorithm.
-    algorithm = new NSGAIIRandom(problem_) ;
+    // Creating the algorithm. There are two choices: NSGAII and its steady-
+    // state variant ssNSGAII
+    algorithm = new NSGAII(problem_) ;
+    //algorithm = new ssNSGAII(problem_) ;
 
     // Algorithm parameters
     populationSize_ = Integer.parseInt(configuration.getProperty("populationSize",String.valueOf(populationSize_)));
@@ -138,27 +164,27 @@ public class NSGAIIRandom_Settings extends Settings {
     // Mutation and Crossover for Real codification
     crossoverProbability_ = Double.parseDouble(configuration.getProperty("crossoverProbability",String.valueOf(crossoverProbability_)));
     crossoverDistributionIndex_ = Double.parseDouble(configuration.getProperty("crossoverDistributionIndex",String.valueOf(crossoverDistributionIndex_)));
+    parameters = new HashMap() ;
+    parameters.put("probability", crossoverProbability_) ;
+    parameters.put("distributionIndex", crossoverDistributionIndex_) ;
+    crossover = CrossoverFactory.getCrossoverOperator("SBXCrossover", parameters);
+
     mutationProbability_ = Double.parseDouble(configuration.getProperty("mutationProbability",String.valueOf(mutationProbability_)));
     mutationDistributionIndex_ = Double.parseDouble(configuration.getProperty("mutationDistributionIndex",String.valueOf(mutationDistributionIndex_)));
-    CR_ = Double.parseDouble(configuration.getProperty("CR",String.valueOf(CR_)));
-    F_ = Double.parseDouble(configuration.getProperty("F",String.valueOf(F_)));
-
-    Offspring[] getOffspring = new Offspring[3];
-    getOffspring[0] = new DifferentialEvolutionOffspring(CR_, F_);
-
-    getOffspring[1] = new SBXCrossoverOffspring(crossoverProbability_, crossoverDistributionIndex_);
-
-    getOffspring[2] = new PolynomialMutationOffspring(mutationProbability_, mutationDistributionIndex_);
-
-    algorithm.setInputParameter("offspringsCreators", getOffspring);
+    parameters = new HashMap() ;
+    parameters.put("probability", mutationProbability_) ;
+    parameters.put("distributionIndex", mutationDistributionIndex_) ;
+    mutation = MutationFactory.getMutationOperator("PolynomialMutation", parameters);
 
     // Selection Operator
     parameters = null ;
     selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters) ;
 
     // Add the operators to the algorithm
+    algorithm.addOperator("crossover",crossover);
+    algorithm.addOperator("mutation",mutation);
     algorithm.addOperator("selection",selection);
 
     return algorithm ;
   }
-} // NSGAIIRandom_Settings
+} // NSGAII_SettingsTest

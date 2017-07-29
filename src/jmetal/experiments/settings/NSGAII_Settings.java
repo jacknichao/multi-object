@@ -67,7 +67,7 @@ public class NSGAII_Settings extends Settings {
     crossoverProbability_        = 0.9   ;
     mutationDistributionIndex_   = 20.0  ;
     crossoverDistributionIndex_  = 20.0  ;
-  } // NSGAII_Settings
+  } // NSGAII_SettingsTest
 
 
   /**
@@ -165,4 +165,4 @@ public class NSGAII_Settings extends Settings {
 
     return algorithm ;
   }
-} // NSGAII_Settings
+} // NSGAII_SettingsTest

@@ -88,7 +88,7 @@ public class StandardStudy2 extends Experiment {
   public static void main(String[] args) throws JMException, IOException {
     StandardStudy2 exp = new StandardStudy2();
 
-    exp.experimentName_ = "StandardStudy2";
+    exp.experimentName_ = "StandardStudy2Test";
     exp.algorithmNameList_ = new String[]{
                                 "NSGAII", "SPEA2", "MOCell", "SMPSO", "GDE3"};
     exp.problemList_ = new String[]{"ZDT1", "ZDT2","ZDT3", "ZDT4","ZDT6",
@@ -163,6 +163,6 @@ public class StandardStudy2 extends Experiment {
     test.executeTest("HV");
     test.executeTest("SPREAD");
   } // main
-} // StandardStudy2
+} // StandardStudy2Test
 
 

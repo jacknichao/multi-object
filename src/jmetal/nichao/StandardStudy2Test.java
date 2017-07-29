@@ -1,4 +1,4 @@
-//  StandardStudy.java
+//  StandardStudy2.java
 //
 //  Authors:
 //       Antonio J. Nebro <antonio@lcc.uma.es>
@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package jmetal.experiments.studies;
+package jmetal.nichao;
 
 import jmetal.core.Algorithm;
 import jmetal.experiments.Experiment;
@@ -34,11 +34,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * 在真实的实验环境中，无法事先提供Pareto fronts，当前的实验设置符合我们的真实的实验环境
+ * 并且，该程序运行过程中会自己生成所需要的Pareto fronts文件
  * Class implementing a typical experimental study. Five algorithms are 
  * compared when solving the ZDT, DTLZ, and WFG benchmarks, and the hypervolume,
  * spread and additive epsilon indicators are used for performance assessment.
+ * In this experiment, we assume that the true Pareto fronts are unknown, so 
+ * they must be calculated automatically. 
  */
-public class StandardStudy extends Experiment {
+public class StandardStudy2Test extends Experiment {
 
   /**
    * Configures the algorithms in each independent run
@@ -58,22 +62,20 @@ public class StandardStudy extends Experiment {
         parameters[i] = new HashMap();
       } // for
 
-      if (!paretoFrontFile_[problemIndex].equals("")) {
+      if (!(paretoFrontFile_[problemIndex] == null) && !paretoFrontFile_[problemIndex].equals("")) {
         for (int i = 0; i < numberOfAlgorithms; i++)
           parameters[i].put("paretoFrontFile_", paretoFrontFile_[problemIndex]);
         } // if
 
-        algorithm[0] = new NSGAII_Settings(problemName).configure(parameters[0]);
-        algorithm[1] = new SPEA2_Settings(problemName).configure(parameters[1]);
-        algorithm[2] = new MOCell_Settings(problemName).configure(parameters[2]);
-        algorithm[3] = new SMPSO_Settings(problemName).configure(parameters[3]);
-        algorithm[4] = new GDE3_Settings(problemName).configure(parameters[4]);
+      //设定对一个的算法
+      algorithm[0] = new NSGAII_SettingsTest(problemName).configure(parameters[0]);
+
       } catch (IllegalArgumentException ex) {
-      Logger.getLogger(StandardStudy.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(StandardStudy2Test.class.getName()).log(Level.SEVERE, null, ex);
     } catch (IllegalAccessException ex) {
-      Logger.getLogger(StandardStudy.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(StandardStudy2Test.class.getName()).log(Level.SEVERE, null, ex);
     } catch  (JMException ex) {
-      Logger.getLogger(StandardStudy.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(StandardStudy2Test.class.getName()).log(Level.SEVERE, null, ex);
     }
   } // algorithmSettings
 
@@ -84,42 +86,38 @@ public class StandardStudy extends Experiment {
    * @throws IOException
    */
   public static void main(String[] args) throws JMException, IOException {
-    StandardStudy exp = new StandardStudy();
+    StandardStudy2Test exp = new StandardStudy2Test();
 
-    exp.experimentName_ = "StandardStudyTest";
-    exp.algorithmNameList_ = new String[]{
-                                "NSGAII", "SPEA2", "MOCell", "SMPSO", "GDE3"};
-    exp.problemList_ = new String[]{"ZDT1", "ZDT2","ZDT3", "ZDT4","ZDT6",
-                                    "WFG1","WFG2","WFG3","WFG4","WFG5","WFG6",
-                                    "WFG7","WFG8","WFG9",
-                                    "DTLZ1","DTLZ2","DTLZ3","DTLZ4","DTLZ5",
-                                    "DTLZ6","DTLZ7"};
-    exp.paretoFrontFile_ = new String[]{"ZDT1.pf", "ZDT2.pf","ZDT3.pf",
-                                    "ZDT4.pf","ZDT6.pf",
-                                    "WFG1.2D.pf","WFG2.2D.pf","WFG3.2D.pf",
-                                    "WFG4.2D.pf","WFG5.2D.pf","WFG6.2D.pf",
-                                    "WFG7.2D.pf","WFG8.2D.pf","WFG9.2D.pf",
-                                    "DTLZ1.2D.pf","DTLZ2.2D.pf","DTLZ3.2D.pf",
-                                    "DTLZ4.2D.pf","DTLZ5.2D.pf","DTLZ6.2D.pf",
-                                    "DTLZ7.2D.pf"};
+    exp.experimentName_ = "StandardStudy2Test";
+    //当前实验环境中，仅仅使用一个algorithm来测试
+    exp.algorithmNameList_ = new String[]{"NSGAII"};
+    exp.problemList_ = new String[]{"FS"};
 
-    exp.indicatorList_ = new String[]{"HV", "SPREAD", "EPSILON"};
+    //对于实际的研究问题，不需要制定pareto front文件，但是需要为其初始化空间
+    exp.paretoFrontFile_ = new String[1] ; // Space allocation for specific fronts
+
+   exp.indicatorList_ = new String[]{"HV", "SPREAD", "EPSILON"};
+  //  exp.indicatorList_ = null;
 
     int numberOfAlgorithms = exp.algorithmNameList_.length;
 
-    exp.experimentBaseDirectory_ = "/Users/antelverde/Softw/pruebas/jmetal/" +
-                                   exp.experimentName_;
-    exp.paretoFrontDirectory_ = "/Users/antelverde/Softw/pruebas/data/paretoFronts";
+    exp.experimentBaseDirectory_ = "F:/multi-object/results/"+ exp.experimentName_;
 
+    //对于实际的研究问题，在不制定pareto front文件情况下，此处必须为空
+
+     exp.paretoFrontDirectory_ = "" ; // This directory must be empty
+
+    //这里是为每一个算法初始化设值，在单独的每一轮运行的时候，才会使用真正的配置
     exp.algorithmSettings_ = new Settings[numberOfAlgorithms];
 
-    exp.independentRuns_ = 100;
+    exp.independentRuns_ = 4;
 
     exp.initExperiment();
 
     // Run the experiments
     int numberOfThreads ;
-    exp.runExperiment(numberOfThreads = 4) ;
+    exp.runExperiment(numberOfThreads = 1) ;
+
 
     exp.generateQualityIndicators() ;
 
@@ -133,41 +131,24 @@ public class StandardStudy extends Experiment {
     String [] problems ;
     boolean notch ;
 
-    // Configuring scripts for ZDT
-    rows = 3 ;
-    columns = 2 ;
-    prefix = new String("ZDT");
-    problems = new String[]{"ZDT1", "ZDT2","ZDT3", "ZDT4","ZDT6"} ;
+    // Configuring scripts for FeatureSelection
+    rows = 1 ;
+    columns = 1 ;
+    //前缀会方法生成的文件名里
+    prefix = new String("Problems");
+    problems = new String[]{"FeatureSelection"} ;
     
     exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch = false, exp) ;
     exp.generateRWilcoxonScripts(problems, prefix, exp) ;
 
-    // Configure scripts for DTLZ
-    rows = 3 ;
-    columns = 3 ;
-    prefix = new String("DTLZ");
-    problems = new String[]{"DTLZ1","DTLZ2","DTLZ3","DTLZ4","DTLZ5",
-                                    "DTLZ6","DTLZ7"} ;
-
-    exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch=false, exp) ;
-    exp.generateRWilcoxonScripts(problems, prefix, exp) ;
-
-    // Configure scripts for WFG
-    rows = 3 ;
-    columns = 3 ;
-    prefix = new String("WFG");
-    problems = new String[]{"WFG1","WFG2","WFG3","WFG4","WFG5","WFG6",
-                            "WFG7","WFG8","WFG9"} ;
-
-    exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch=false, exp) ;
-    exp.generateRWilcoxonScripts(problems, prefix, exp) ;
 
     // Applying Friedman test
     Friedman test = new Friedman(exp);
     test.executeTest("EPSILON");
     test.executeTest("HV");
     test.executeTest("SPREAD");
+
   } // main
-} // StandardStudyTest
+} // StandardStudy2Test
 
 
