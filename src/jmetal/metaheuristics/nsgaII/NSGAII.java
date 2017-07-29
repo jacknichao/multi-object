@@ -56,6 +56,7 @@ public class NSGAII extends Algorithm {
   public SolutionSet execute() throws JMException, ClassNotFoundException {
     int populationSize;
     int maxEvaluations;
+    //a counter of the number  of computed evaluations
     int evaluations;
 
     QualityIndicator indicators; // QualityIndicator object
@@ -70,6 +71,7 @@ public class NSGAII extends Algorithm {
     Operator crossoverOperator;
     Operator selectionOperator;
 
+    //is used to calculate the crowding  distance.
     Distance distance = new Distance();
 
     //Read the parameters

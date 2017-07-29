@@ -1,0 +1,16 @@
+#忽略bin和out目录下的所有文件 
+bin/
+out/
+
+
+#忽略.idea .settings下的所有文件
+.idea/
+.settings/
+
+
+#忽略results中的所有文件，该文件夹用于保存中间输出的结果
+results/
+
+
+#忽略.iml文件，该文件是idea工程自动创建的
+*.iml

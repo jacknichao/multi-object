@@ -334,6 +334,7 @@ public class Solution implements Serializable {
   } // toString
 
   /**
+   * 获得当前优化过程中对应的变量的取值
    * Returns the decision variables of the solution.
    * @return the <code>DecisionVariables</code> object representing the decision
    * variables of the solution.
