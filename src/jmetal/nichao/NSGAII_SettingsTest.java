@@ -78,9 +78,10 @@ public class NSGAII_SettingsTest extends Settings {
 	    e.printStackTrace();
     }
     */
-    // Default experiments.settings
+    // Default experiments.settings   pop size 暂时设定为30 max evaluation设定为3000
+
     populationSize_              = 100   ;
-    maxEvaluations_              = 250 ;
+    maxEvaluations_              = 3000 ;
     mutationProbability_         = 1.0/problem_.getNumberOfVariables() ;
     crossoverProbability_        = 0.9   ;
     mutationDistributionIndex_   = 20.0  ;
