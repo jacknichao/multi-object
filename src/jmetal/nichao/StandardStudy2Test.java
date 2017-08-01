@@ -101,7 +101,7 @@ public class StandardStudy2Test extends Experiment {
 
     int numberOfAlgorithms = exp.algorithmNameList_.length;
 
-    exp.experimentBaseDirectory_ = "F:/multi-object/results/"+ exp.experimentName_;
+    exp.experimentBaseDirectory_ = "/home/jacknichao/ideaProjects/multi-object/results/"+ exp.experimentName_;
 
     //对于实际的研究问题，在不制定pareto front文件情况下，此处必须为空
 

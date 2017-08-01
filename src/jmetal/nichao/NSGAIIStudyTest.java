@@ -99,6 +99,7 @@ public class NSGAIIStudyTest extends Experiment {
       "ZDT1", "ZDT2", "ZDT3", "ZDT4", "DTLZ1", "WFG2"} ;
       //The order of the names of the Pareto front les must be the same as the name of the problems in the problem list.
     exp.paretoFrontFile_ = new String[] {
+
       "ZDT1.pf", "ZDT2.pf", "ZDT3.pf","ZDT4.pf", "DTLZ1.2D.pf", "WFG2.2D.pf"} ;
     exp.indicatorList_   = new String[] {"HV", "SPREAD", "IGD", "EPSILON"} ;
     

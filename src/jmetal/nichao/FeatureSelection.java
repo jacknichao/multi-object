@@ -2,7 +2,6 @@ package jmetal.nichao;/**
  * Created by ChaoNi on 2017/7/28.
  */
 
-import javafx.beans.binding.DoubleExpression;
 import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.Variable;
@@ -53,7 +52,6 @@ public class FeatureSelection extends Problem {
      * Creates a new FeatureSelection  problem instance
      *
      * @param solutionType      编码的类型
-     * @param numberOfVariables 变量的个数
      */
     public FeatureSelection(String solutionType, String projectName) {
         numberOfObjectives_ = 2;

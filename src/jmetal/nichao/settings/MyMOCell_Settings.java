@@ -1,4 +1,4 @@
-//  NSGAII_Settings.java 
+//  MOCell_Settings.java 
 //
 //  Authors:
 //       Antonio J. Nebro <antonio@lcc.uma.es>
@@ -19,11 +19,13 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package jmetal.nichao;
+package jmetal.nichao.settings;
 
 import jmetal.core.Algorithm;
+import jmetal.core.Operator;
 import jmetal.experiments.Settings;
-import jmetal.metaheuristics.nsgaII.NSGAII;
+import jmetal.metaheuristics.mocell.MOCell;
+import jmetal.nichao.MyProblemFactory;
 import jmetal.operators.crossover.Crossover;
 import jmetal.operators.crossover.CrossoverFactory;
 import jmetal.operators.mutation.Mutation;
@@ -37,130 +39,126 @@ import java.util.HashMap;
 import java.util.Properties;
 
 /**
- * Settings class of algorithm NSGA-II (real encoding)
+ * Settings class of algorithm MOCell
  */
-public class NSGAII_SettingsTest extends Settings {
-  public int populationSize_                 ;
-  public int maxEvaluations_                 ;
-  public double mutationProbability_         ;
-  public double crossoverProbability_        ;
-  public double mutationDistributionIndex_   ;
-  public double crossoverDistributionIndex_  ;
+public class MyMOCell_Settings extends Settings{
 
+  public int populationSize_                ;
+  public int maxEvaluations_                ;
+  public int archiveSize_                   ;
+  public int feedback_                      ;
+  public double mutationProbability_        ;
+  public double crossoverProbability_       ;
+  public double crossoverDistributionIndex_ ;
+  public double mutationDistributionIndex_  ;
 
-  /**
-   * 保存需要验证的数据集
-   *//*
-  public String projectName="";
-
-  *//**
-   * 设置需要验证的数据集
-   * @param path
-   *//*
-  public void setProjectName(String path){
-    this.projectName=path;
-  }*/
   /**
    * Constructor
    */
-  public NSGAII_SettingsTest(String problemName) {
+  public MyMOCell_Settings(String problemName) {
     super(problemName) ;
-    String projectName="/home/jacknichao/datasets/Relink/Apache.arff";
-    //这里需要实例化我们自己的Problem
-    problem_=new FeatureSelection("Binary",projectName);
 
-    /*
-    Object [] problemParams = {"Real"};
+    Object [] problemParams = {"Binary"};
     try {
-	    problem_ = (new ProblemFactory()).getProblem(problemName_, problemParams);
+      problem_ = (new MyProblemFactory()).getProblem(problemName_, problemParams);
     } catch (JMException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
-    */
-    // Default experiments.settings   pop size 暂时设定为30 max evaluation设定为3000
 
-    populationSize_              = 100   ;
-    maxEvaluations_              = 3000 ;
-    mutationProbability_         = 1.0/problem_.getNumberOfVariables() ;
-    crossoverProbability_        = 0.9   ;
-    mutationDistributionIndex_   = 20.0  ;
-    crossoverDistributionIndex_  = 20.0  ;
-  } // NSGAII_SettingsTest
-
+    // Default experiments.settings
+    populationSize_             = 100   ;
+    maxEvaluations_             = 3000 ;
+    archiveSize_                = 100   ;
+    feedback_                   = 20    ;
+    mutationProbability_        = 1.0/problem_.getNumberOfVariables();
+    crossoverProbability_       = 0.9   ;
+    crossoverDistributionIndex_ = 20.0  ;
+    mutationDistributionIndex_  = 20.0  ;
+  } // MOCell_Settings
 
   /**
-   * Configure NSGAII with default parameter experiments.settings
-   * @return A NSGAII algorithm object
+   * Configure the MOCell algorithm with default parameter experiments.settings
+   * @return an algorithm object
    * @throws JMException
    */
   public Algorithm configure() throws JMException {
     Algorithm algorithm ;
-    Selection  selection ;
-    Crossover  crossover ;
-    Mutation   mutation  ;
+
+    Crossover crossover ;
+    Mutation  mutation  ;
+    Operator  selection ;
 
     HashMap  parameters ; // Operator parameters
 
-    // Creating the algorithm. There are two choices: NSGAII and its steady-
-    // state variant ssNSGAII
-    algorithm = new NSGAII(problem_) ;
-    //algorithm = new ssNSGAII(problem_) ;
+    // Selecting the algorithm: there are six MOCell variants
+    //algorithm = new sMOCell1(problem_) ;
+    //algorithm = new sMOCell2(problem_) ;
+    //algorithm = new aMOCell1(problem_) ;
+    //algorithm = new aMOCell2(problem_) ;
+    //algorithm = new aMOCell3(problem_) ;
+    algorithm = new MOCell(problem_) ;
 
     // Algorithm parameters
-    algorithm.setInputParameter("populationSize",populationSize_);
-    algorithm.setInputParameter("maxEvaluations",maxEvaluations_);
+    algorithm.setInputParameter("populationSize", populationSize_);
+    algorithm.setInputParameter("maxEvaluations", maxEvaluations_);
+    algorithm.setInputParameter("archiveSize",archiveSize_ );
+    algorithm.setInputParameter("feedBack", feedback_);
 
-    // Mutation and Crossover for Real codification
+
+    // Mutation and Crossover for Real codification 
     parameters = new HashMap() ;
     parameters.put("probability", crossoverProbability_) ;
     parameters.put("distributionIndex", crossoverDistributionIndex_) ;
-   //这个交叉编译不适合
-   // crossover = CrossoverFactory.getCrossoverOperator("SBXCrossover", parameters);
     crossover = CrossoverFactory.getCrossoverOperator("SinglePointCrossover", parameters);
 
     parameters = new HashMap() ;
     parameters.put("probability", mutationProbability_) ;
     parameters.put("distributionIndex", mutationDistributionIndex_) ;
-  //这个编译也是不合适的  ,只有BitFlipMutation这么一个编译算子支持BinaryType
-//    mutation = MutationFactory.getMutationOperator("PolynomialMutation", parameters);
     mutation = MutationFactory.getMutationOperator("BitFlipMutation", parameters);
 
-    // Selection Operator
+    // Selection Operator 
     parameters = null ;
-    selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters) ;
+    selection = SelectionFactory.getSelectionOperator("BinaryTournament", parameters) ;   
 
     // Add the operators to the algorithm
-    algorithm.addOperator("crossover",crossover);
-    algorithm.addOperator("mutation",mutation);
-    algorithm.addOperator("selection",selection);
+    algorithm.addOperator("crossover", crossover);
+    algorithm.addOperator("mutation", mutation);
+    algorithm.addOperator("selection", selection);
 
     return algorithm ;
   } // configure
 
- /**
-  * Configure NSGAII with user-defined parameter experiments.settings
-  * @return A NSGAII algorithm object
-  */
+  /**
+   * Configure MOCell with user-defined parameter experiments.settings
+   * @return A MOCell algorithm object
+   */
   @Override
   public Algorithm configure(Properties configuration) throws JMException {
     Algorithm algorithm ;
-    Selection  selection ;
+    Selection selection ;
     Crossover  crossover ;
     Mutation   mutation  ;
 
     HashMap  parameters ; // Operator parameters
 
-    // Creating the algorithm. There are two choices: NSGAII and its steady-
-    // state variant ssNSGAII
-    algorithm = new NSGAII(problem_) ;
-    //algorithm = new ssNSGAII(problem_) ;
+    // Selecting the algorithm: there are six MOCell variants
+    //algorithm = new sMOCell1(problem_) ;
+    //algorithm = new sMOCell2(problem_) ;
+    //algorithm = new aMOCell1(problem_) ;
+    //algorithm = new aMOCell2(problem_) ;
+    //algorithm = new aMOCell3(problem_) ;
+    algorithm = new MOCell(problem_) ;
 
     // Algorithm parameters
     populationSize_ = Integer.parseInt(configuration.getProperty("populationSize",String.valueOf(populationSize_)));
     maxEvaluations_  = Integer.parseInt(configuration.getProperty("maxEvaluations",String.valueOf(maxEvaluations_)));
+    archiveSize_  = Integer.parseInt(configuration.getProperty("archiveSize",String.valueOf(archiveSize_)));
+    feedback_  = Integer.parseInt(configuration.getProperty("feedback",String.valueOf(feedback_)));
     algorithm.setInputParameter("populationSize",populationSize_);
     algorithm.setInputParameter("maxEvaluations",maxEvaluations_);
+    algorithm.setInputParameter("archiveSize",archiveSize_);
+    algorithm.setInputParameter("feedback",feedback_);
 
     // Mutation and Crossover for Real codification
     crossoverProbability_ = Double.parseDouble(configuration.getProperty("crossoverProbability",String.valueOf(crossoverProbability_)));
@@ -168,18 +166,18 @@ public class NSGAII_SettingsTest extends Settings {
     parameters = new HashMap() ;
     parameters.put("probability", crossoverProbability_) ;
     parameters.put("distributionIndex", crossoverDistributionIndex_) ;
-    crossover = CrossoverFactory.getCrossoverOperator("SBXCrossover", parameters);
+    crossover = CrossoverFactory.getCrossoverOperator("SinglePointCrossover", parameters);
 
     mutationProbability_ = Double.parseDouble(configuration.getProperty("mutationProbability",String.valueOf(mutationProbability_)));
     mutationDistributionIndex_ = Double.parseDouble(configuration.getProperty("mutationDistributionIndex",String.valueOf(mutationDistributionIndex_)));
     parameters = new HashMap() ;
     parameters.put("probability", mutationProbability_) ;
     parameters.put("distributionIndex", mutationDistributionIndex_) ;
-    mutation = MutationFactory.getMutationOperator("PolynomialMutation", parameters);
+    mutation = MutationFactory.getMutationOperator("BitFlipMutation", parameters);
 
     // Selection Operator
     parameters = null ;
-    selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters) ;
+    selection = SelectionFactory.getSelectionOperator("BinaryTournament", parameters) ;
 
     // Add the operators to the algorithm
     algorithm.addOperator("crossover",crossover);
@@ -188,4 +186,4 @@ public class NSGAII_SettingsTest extends Settings {
 
     return algorithm ;
   }
-} // NSGAII_SettingsTest
+} // MOCell_Settings
