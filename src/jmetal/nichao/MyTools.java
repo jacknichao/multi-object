@@ -13,12 +13,14 @@ import java.util.Properties;
 public class MyTools {
 
     /**
-     * 问题名称到数据集名称的映射，比如Apache->Safe
+     * 问题名称到数据集名称的映射，比如Apache->Relink
      */
     private static HashMap<String,String> problemToDataset=null;
 
+    private static HashMap<String,String> problemToArffName=null;
+
     /**
-     * Safe/Apache.arff等文件的根路径
+     * SafeKNN/ApacheKNN.arff等文件的根路径
      */
     private static String datasetBase="";
 
@@ -28,29 +30,42 @@ public class MyTools {
         problemToDataset=new HashMap<>();
 
         //Relink数据集
-        problemToDataset.put("Apache","Relink");
-        problemToDataset.put("Safe","Relink");
-        problemToDataset.put("Zxing","Relink");
+        problemToDataset.put("ApacheKNN","Relink");
+        problemToDataset.put("ApacheLR","Relink");
+        problemToDataset.put("ApacheJ48","Relink");
+        problemToDataset.put("ApacheNB","Relink");
 
-        //AEEEM数据集
-        problemToDataset.put("EQ","AEEEM");
-        problemToDataset.put("JDT","AEEEM");
-        problemToDataset.put("LC","AEEEM");
-        problemToDataset.put("ML","AEEEM");
-        problemToDataset.put("PDE","AEEEM");
 
-        //NASAClean1
-        problemToDataset.put("CM1","NASAClean1");
-        problemToDataset.put("JM1","NASAClean1");
-        problemToDataset.put("KC3","NASAClean1");
-        problemToDataset.put("MC1","NASAClean1");
-        problemToDataset.put("MC2","NASAClean1");
-        problemToDataset.put("MW1","NASAClean1");
-        problemToDataset.put("PC1","NASAClean1");
-        problemToDataset.put("PC2","NASAClean1");
-        problemToDataset.put("PC3","NASAClean1");
-        problemToDataset.put("PC4","NASAClean1");
-        problemToDataset.put("CM5","NASAClean1");
+        problemToDataset.put("SafeKNN","Relink");
+        problemToDataset.put("SafeLR","Relink");
+        problemToDataset.put("SafeJ48","Relink");
+        problemToDataset.put("SafeNB","Relink");
+
+        problemToDataset.put("ZxingKNN","Relink");
+        problemToDataset.put("ZxingLR","Relink");
+        problemToDataset.put("ZxingJ48","Relink");
+        problemToDataset.put("ZxingNB","Relink");
+
+
+        //problemToarff文件
+        problemToArffName=new HashMap<>();
+
+        problemToArffName.put("ApacheKNN","Apache");
+        problemToArffName.put("ApacheLR","Apache");
+        problemToArffName.put("ApacheJ48","Apache");
+        problemToArffName.put("ApacheNB","Apache");
+
+
+        problemToArffName.put("SafeKNN","Safe");
+        problemToArffName.put("SafeLR","Safe");
+        problemToArffName.put("SafeJ48","Safe");
+        problemToArffName.put("SafeNB","Safe");
+
+        problemToArffName.put("ZxingKNN","Zxing");
+        problemToArffName.put("ZxingLR","Zxing");
+        problemToArffName.put("ZxingJ48","Zxing");
+        problemToArffName.put("ZxingNB","Zxing");
+
 
         Properties prop = new Properties();
         try {
@@ -68,7 +83,7 @@ public class MyTools {
      * <font color='red'>问题名称到数据集名称的映射，比如Apache->Relink</font>
      */
     public static String problemToDatasetName(String problem){
-        if(problemToDataset==null||!problem.contains(problem)){
+        if(problemToDataset==null||!problemToDataset.containsKey(problem)){
             System.err.println("未找到"+problem+"到对应数据集的完整路径");
             System.exit(1);
         }
@@ -84,13 +99,13 @@ public class MyTools {
      * @return
      */
     public static String problemDataFullPath(String problem){
-        if(problemToDataset==null||!problem.contains(problem)){
+        if(!problemToArffName.containsKey(problem)){
             System.err.println("未找到"+problem+"到对应数据集的完整路径");
             System.exit(1);
         }
 
        //根据基准路径 数据集名称 问题名称得到对应的数据集
-        String fullPath=datasetBase+"/"+problemToDataset.get(problem)+"/"+problem+".arff";
+        String fullPath=datasetBase+"/"+problemToDataset.get(problem)+"/"+problemToArffName.get(problem)+".arff";
 
         return fullPath;
     }
@@ -117,8 +132,8 @@ public class MyTools {
 
         System.out.println("测试运行读取配置文件是否成功....");
         System.out.println(datasetBase);
-        System.out.println(MyTools.problemToDatasetName("Apache"));
-        System.out.println(MyTools.problemDataFullPath("Apache"));
+        System.out.println(MyTools.problemToDatasetName("ApacheKNN"));
+        System.out.println(MyTools.problemDataFullPath("ApacheKNN"));
 
 
     }

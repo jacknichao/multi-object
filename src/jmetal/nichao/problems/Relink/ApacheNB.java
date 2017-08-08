@@ -7,19 +7,19 @@ import jmetal.nichao.problems.BaseProblemImpl;
 
 
 /**
- * Class representing problem Apache.
+ * Class representing problem ApacheKNN.
  * The problem consist of maximizing the number of '1's in a binary string.
  */
-public class Apache extends BaseProblemImpl {
+public class ApacheNB extends BaseProblemImpl {
 
      /**
-     * Creates a new Apache  problem instance
+     * Creates a new ApacheKNN  problem instance
      *
      * @param solutionType      编码的类型
      */
-    public Apache(String solutionType) {
+    public ApacheNB(String solutionType) {
         //只需要更改此处的事先就可以完整所有方法的实现了
-        super(solutionType,"Apache");
+        super(solutionType,"ApacheNB","weka.classifiers.bayes.NaiveBayes");
     }
 
 }

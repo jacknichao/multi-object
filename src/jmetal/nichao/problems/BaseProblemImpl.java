@@ -6,9 +6,11 @@ import jmetal.core.Variable;
 import jmetal.encodings.solutionType.BinarySolutionType;
 import jmetal.encodings.variable.Binary;
 import jmetal.nichao.MyTools;
+import jmetal.util.Configuration;
 import jmetal.util.JMException;
+import weka.classifiers.Classifier;
 import weka.classifiers.evaluation.Evaluation;
-import weka.classifiers.lazy.IBk;
+
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils;
 import weka.filters.Filter;
@@ -18,7 +20,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * 该类是对Problem的简单封装，主要是因为本文的研究问题实际是一个问题，主要是针对不同的数据集
+ * 该类是对Problem的简单封装，主要是因为本文的研究问题实际是同一个问题，
+ * 主要是针对不同的数据集和不同分类器
  */
 public abstract class BaseProblemImpl extends Problem {
 
@@ -30,16 +33,25 @@ public abstract class BaseProblemImpl extends Problem {
 	/**
 	 * 30%的测试数据
 	 */
-	private Instances thirtyPercent = null;
+	//private Instances thirtyPercent = null;
+
+	/**
+	 * 使用的集分类器的名称
+	 */
+	private String classifierName="";
 
 
-	public BaseProblemImpl(String solutionType, String problemName){
+	public BaseProblemImpl(String solutionType, String problemName,String classifier){
 
 		assert problemName_ !="";
 
 		numberOfObjectives_ = 2;
-		numberOfConstraints_ = 0;
+		//这里有一个限定条件，就是至少选择一个特征来构建缺陷预测模型
+		numberOfConstraints_ = 1;
+
+
 		problemName_ =problemName;
+		classifierName=classifier;
 
 		//其实这里就是用二进制位来编码变量的
 //        solutionType_ = new BinarySolutionType(this) ;
@@ -75,7 +87,7 @@ public abstract class BaseProblemImpl extends Problem {
 			//计算前70%的实例的索引
 			int index = (int) Math.round(all.numInstances() * 0.7);
 			seventyPercent = new Instances(all, 0, index);
-			thirtyPercent = new Instances(all, index, all.numInstances() - index);
+			//thirtyPercent = new Instances(all, index, all.numInstances() - index);
 			//将当前实验的训练集合、测试集合保存起来，以便后续在测试集合上进行验证
 			// ConverterUtils.DataSink.write("results/seventyPercent.arff", seventyPercent);
 			// ConverterUtils.DataSink.write("results/thirtyPercent.arff", thirtyPercent);
@@ -120,14 +132,27 @@ public abstract class BaseProblemImpl extends Problem {
 			filteredSeventyPercent.stratify(3);
 		}
 
-		//对分层采样后的训练集进行3折交叉验证
-		IBk iBk = new IBk(3);
+
+		Class clazz=null;
+		Classifier classifier=null;
+
+		//使用类加载器的方式实例化一个分类器
+		try {
+			 clazz = Class.forName(classifierName);
+			 classifier = (Classifier) clazz.newInstance();
+		}
+		catch(Exception e) {
+			Configuration.logger_.severe("BaseProblemImpl.evaluate(): " +
+					" can not new instance of "+classifierName);
+			e.printStackTrace();
+			throw new JMException("Exception in BaseProblemImpl.evaluate()") ;
+		} // catch
 
 
 		Evaluation evaluation = null;
 		try {
 			evaluation = new Evaluation(filteredSeventyPercent);
-			evaluation.crossValidateModel(iBk, filteredSeventyPercent, 3, new Random(1));
+			evaluation.crossValidateModel(classifier, filteredSeventyPercent, 3, new Random(1));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -139,5 +164,42 @@ public abstract class BaseProblemImpl extends Problem {
 
 		solution.setObjective(0, objects[0]);
 		solution.setObjective(1, objects[1]);
+	}
+
+
+	@Override
+	/**
+	 * 所有的问题解决都是有一个限制条件的，就是最少要选择一个特征
+	 */
+	public void evaluateConstraints(Solution solution) throws JMException {
+		//该函数表示在当前演化的过程中的某一个步骤，此时各个变量的取的值
+		double [] constraint = new double[this.getNumberOfConstraints()];
+
+		//该函数表示在当前演化的过程中的某一个步骤，此时各个变量的取的值
+		Variable[] variable = solution.getDecisionVariables();
+		//保存将被删除的特征的索引，也即在当前轮次没有被选中
+		int toDel=0;
+		for (int index = 0; index < variable.length; index++) {
+			if (((Binary) variable[index]).getIth(0) == false) {
+				toDel++;
+			}
+		}
+
+		//要求限定的条件大于等于0，如果是多变量带入求值的话，参见jmetal文章中的例子
+		constraint[0] = this.getNumberOfVariables()- toDel;
+
+
+		double total = 0.0;
+		int number = 0;
+		for (int i = 0; i < this.getNumberOfConstraints(); i++)
+			if (constraint[i]<=0.0){
+				total+=constraint[i];
+				number++;
+			}
+
+		solution.setOverallConstraintViolation(total);
+		solution.setNumberOfViolatedConstraint(number);
+
+	//super.evaluateConstraints(solution);
 	}
 }

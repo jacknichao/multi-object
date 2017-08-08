@@ -64,7 +64,7 @@ public class NSGAII_mainTest {
     Operator  crossover ; // Crossover operator
     Operator  mutation  ; // Mutation operator
     Operator  selection ; // Selection operator
-    String projectName="D:\\testinput\\Safe\\Safe.arff";
+    String projectName="D:\\testinput\\SafeKNN\\SafeKNN.arff";
     
     HashMap  parameters ; // Operator parameters
     

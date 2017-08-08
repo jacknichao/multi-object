@@ -24,10 +24,6 @@ package jmetal.nichao;
 import jmetal.core.Algorithm;
 import jmetal.experiments.Experiment;
 import jmetal.experiments.Settings;
-import jmetal.experiments.settings.GDE3_Settings;
-import jmetal.experiments.settings.MOCell_Settings;
-import jmetal.experiments.settings.SMPSO_Settings;
-import jmetal.experiments.settings.SPEA2_Settings;
 import jmetal.experiments.util.Friedman;
 import jmetal.nichao.settings.*;
 import jmetal.util.JMException;
@@ -42,7 +38,7 @@ import java.util.logging.Logger;
  * compared when solving the ZDT, DTLZ, and WFG benchmarks, and the hypervolume,
  * spread and additive epsilon indicators are used for performance assessment.
  */
-public class MyDriver extends Experiment {
+public class MyDriverRelink extends Experiment {
 
   /**
    * Configures the algorithms in each independent run
@@ -73,7 +69,8 @@ public class MyDriver extends Experiment {
         algorithm[1] = new MyMOCell_Settings(problemName).configure(parameters[1]);
         algorithm[2] = new MySPEA2_Settings(problemName).configure(parameters[2]);
         algorithm[3] = new MyPAES_Settings(problemName).configure(parameters[3]);
-        algorithm[4] = new MyRandomSearch_Settings(problemName).configure(parameters[4]);
+      algorithm[4] = new  MySMSEMOA_Settings(problemName).configure(parameters[4]);
+        algorithm[5] = new MyRandomSearch_Settings(problemName).configure(parameters[5]);
 
       //这两个算法不适用
       //      algorithm[0] = new MySMPSO_Settings(problemName).configure(parameters[0]);
@@ -83,11 +80,11 @@ public class MyDriver extends Experiment {
 
 
       } catch (IllegalArgumentException ex) {
-      Logger.getLogger(MyDriver.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(MyDriverRelink.class.getName()).log(Level.SEVERE, null, ex);
     } catch (IllegalAccessException ex) {
-      Logger.getLogger(MyDriver.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(MyDriverRelink.class.getName()).log(Level.SEVERE, null, ex);
     } catch  (JMException ex) {
-      Logger.getLogger(MyDriver.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(MyDriverRelink.class.getName()).log(Level.SEVERE, null, ex);
     }
   } // algorithmSettings
 
@@ -98,15 +95,17 @@ public class MyDriver extends Experiment {
    * @throws IOException
    */
   public static void main(String[] args) throws JMException, IOException {
-    MyDriver exp = new MyDriver();
+    MyDriverRelink exp = new MyDriverRelink();
 
-    exp.experimentName_ = "IBK_Zxing";
+    //名称中避免使用下划线_，因为改名称会被用于生成latex表格
+    exp.experimentName_ = "RelinkSixMethods";
 
     exp.algorithmNameList_ = new String[]{
             "NSGAII",
             "MOCell",
             "SPEA2",
             "PAES",
+            "SMSEMOA",
             "RandomSearch"
             //            "SMPSO"//有问题，运行不了
             //  "CellDE"//有问题，运行不了
@@ -114,16 +113,30 @@ public class MyDriver extends Experiment {
 
 
     exp.problemList_ = new String[]{
-    //        "Apache"
-//    "Safe"
-"Zxing"
+            "ApacheKNN",
+            "SafeKNN",
+            "ZxingKNN",
+
+            "ApacheLR",
+            "SafeLR",
+            "ZxingLR",
+
+            "ApacheJ48",
+            "SafeJ48",
+            "ZxingJ48",
+
+            "ApacheNB",
+            "SafeNB",
+            "ZxingNB"
+
     };
 
     //这块需要好好研究下
     exp.paretoFrontFile_ = new String[exp.problemList_.length];
 
 
-    exp.indicatorList_ = new String[]{"HV", "SPREAD", "EPSILON"};
+    //”HV” , ”SPREAD” , ”IGD” , ”EPSILON”
+    exp.indicatorList_ = new String[]{"HV"};
 
     int numberOfAlgorithms = exp.algorithmNameList_.length;
 
@@ -134,13 +147,15 @@ public class MyDriver extends Experiment {
     exp.algorithmSettings_ = new Settings[numberOfAlgorithms];
 
     //exp.independentRuns_ = 100;
-    exp.independentRuns_ = 1;
+    exp.independentRuns_ = 10;
 
     exp.initExperiment();
 
+    double initTime=System.currentTimeMillis();
+
     // Run the experiments
     int numberOfThreads ;
-    exp.runExperiment(numberOfThreads = 4) ;
+    exp.runExperiment(numberOfThreads = 10) ;
 
 
     exp.generateQualityIndicators() ;
@@ -155,21 +170,60 @@ public class MyDriver extends Experiment {
     String [] problems ;
     boolean notch ;
 
-    // Configuring scripts for Safe
+    // Configuring scripts for SafeKNN
     rows = 1;
-    columns = 1 ;
-    prefix = new String("Relink");
-    problems = new String[]{"Apache"} ;
-    
+    columns = 3 ;
+    prefix = new String("RelinkKNN");
+    problems = new String[]{"ApacheKNN","SafeKNN","ZxingKNN"} ;
+
+    //1. 也就是说这里的rows columns的成绩决定了需要解决的问题的个数, 比如有三个问题，那么可以设定为1x3的格局
+    //This method generates R scripts which produce .eps files containing rows × columns boxplots of
+    //the list of problems passed as third parameterThis method generates R scripts which produce .eps files containing rows × columns boxplots of
+    //the list of problems passed as third parameter
+    //所生成的boxplot只是针对problems列表提供的问题在所有方法上的实验结果
     exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch = false, exp) ;
+
+    //2. 如果需要分门别类的针对绘制关于问题的boxplot可以多次调用该函数并提供不同的布局
+    //e.g., 这里AEEEM中有5个问题，可以选择2x3 也可以选择1*5等等
+/*    rows = 2;
+    columns = 3 ;
+    prefix = new String("AEEEM");
+    problems = new String[]{"EQ","JDT","LC","ML","PDE"} ;
+    exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch = false, exp) ;
+    */
+
+    rows = 1;
+    columns = 3 ;
+    prefix = new String("RelinkLR");
+    problems = new String[]{"ApacheLR","SafeLR","ZxingLR"} ;
+    exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch = false, exp) ;
+
+
+    rows = 1;
+    columns = 3 ;
+    prefix = new String("RelinkJ48");
+    problems = new String[]{"ApacheJ48","SafeJ48","ZxingJ48"} ;
+    exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch = false, exp) ;
+
+
+    rows = 1;
+    columns = 3 ;
+    prefix = new String("RelinkNB");
+    problems = new String[]{"ApacheNB","SafeNB","ZxingNB"} ;
+    exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch = false, exp) ;
+
+
     exp.generateRWilcoxonScripts(problems, prefix, exp) ;
 
 
     // Applying Friedman test
     Friedman test = new Friedman(exp);
-    test.executeTest("EPSILON");
+   // test.executeTest("EPSILON");
     test.executeTest("HV");
-    test.executeTest("SPREAD");
+    //test.executeTest("SPREAD");
+
+    double endTime=System.currentTimeMillis();
+    System.out.println("总共用时间:"+ (endTime-initTime));
 
 
   } // main
