@@ -2,10 +2,10 @@ package jmetal.nichao.problems.PROMISE;
 
 import jmetal.nichao.problems.BaseProblemImpl;
 
-public class ant17J48 extends BaseProblemImpl{
+public class ivy20J48 extends BaseProblemImpl{
 
-	public ant17J48(String solutionType) {
+	public ivy20J48(String solutionType) {
 		//只需要更改此处的事先就可以完整所有方法的实现了
-		super(solutionType,"ant17J48","weka.classifiers.trees.J48");
+		super(solutionType,"ivy20J48","weka.classifiers.trees.J48");
 	}
 }

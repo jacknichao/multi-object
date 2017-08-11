@@ -136,7 +136,7 @@ public class MyDriverRelink extends Experiment {
 
 
     //”HV” , ”SPREAD” , ”IGD” , ”EPSILON”
-    exp.indicatorList_ = new String[]{"HV"};
+    exp.indicatorList_ = new String[]{"HV","SPREAD","EPSILON"};
 
     int numberOfAlgorithms = exp.algorithmNameList_.length;
 
@@ -157,6 +157,9 @@ public class MyDriverRelink extends Experiment {
     int numberOfThreads ;
     exp.runExperiment(numberOfThreads = 10) ;
 
+    System.out.println("开始计算指标.....");
+
+
 
     exp.generateQualityIndicators() ;
 
@@ -171,8 +174,8 @@ public class MyDriverRelink extends Experiment {
     boolean notch ;
 
     // Configuring scripts for SafeKNN
-    rows = 1;
-    columns = 3 ;
+    rows = 2;
+    columns = 2 ;
     prefix = new String("RelinkKNN");
     problems = new String[]{"ApacheKNN","SafeKNN","ZxingKNN"} ;
 
@@ -182,6 +185,7 @@ public class MyDriverRelink extends Experiment {
     //the list of problems passed as third parameter
     //所生成的boxplot只是针对problems列表提供的问题在所有方法上的实验结果
     exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch = false, exp) ;
+    exp.generateRWilcoxonScripts(problems, prefix, exp) ;
 
     //2. 如果需要分门别类的针对绘制关于问题的boxplot可以多次调用该函数并提供不同的布局
     //e.g., 这里AEEEM中有5个问题，可以选择2x3 也可以选择1*5等等
@@ -192,35 +196,37 @@ public class MyDriverRelink extends Experiment {
     exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch = false, exp) ;
     */
 
-    rows = 1;
-    columns = 3 ;
+    rows = 2;
+    columns = 2 ;
     prefix = new String("RelinkLR");
     problems = new String[]{"ApacheLR","SafeLR","ZxingLR"} ;
     exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch = false, exp) ;
+    exp.generateRWilcoxonScripts(problems, prefix, exp) ;
 
-
-    rows = 1;
-    columns = 3 ;
+    rows = 2;
+    columns = 2 ;
     prefix = new String("RelinkJ48");
     problems = new String[]{"ApacheJ48","SafeJ48","ZxingJ48"} ;
     exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch = false, exp) ;
+    exp.generateRWilcoxonScripts(problems, prefix, exp) ;
 
-
-    rows = 1;
-    columns = 3 ;
+    rows = 2;
+    columns = 2 ;
     prefix = new String("RelinkNB");
     problems = new String[]{"ApacheNB","SafeNB","ZxingNB"} ;
     exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch = false, exp) ;
-
-
     exp.generateRWilcoxonScripts(problems, prefix, exp) ;
+
+
+    //重新设置结果前缀
+    prefix="FriedmanRelink";
 
 
     // Applying Friedman test
     Friedman test = new Friedman(exp);
-   // test.executeTest("EPSILON");
+    test.executeTest("EPSILON");
     test.executeTest("HV");
-    //test.executeTest("SPREAD");
+    test.executeTest("SPREAD");
 
     double endTime=System.currentTimeMillis();
     System.out.println("总共用时间:"+ (endTime-initTime));

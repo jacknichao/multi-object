@@ -38,7 +38,7 @@ import java.util.logging.Logger;
  * compared when solving the ZDT, DTLZ, and WFG benchmarks, and the hypervolume,
  * spread and additive epsilon indicators are used for performance assessment.
  */
-public class MyDriverRelink extends Experiment {
+public class MyDriverPromise extends Experiment {
 
   /**
    * Configures the algorithms in each independent run
@@ -80,11 +80,11 @@ public class MyDriverRelink extends Experiment {
 
 
       } catch (IllegalArgumentException ex) {
-      Logger.getLogger(MyDriverRelink.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(MyDriverPromise.class.getName()).log(Level.SEVERE, null, ex);
     } catch (IllegalAccessException ex) {
-      Logger.getLogger(MyDriverRelink.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(MyDriverPromise.class.getName()).log(Level.SEVERE, null, ex);
     } catch  (JMException ex) {
-      Logger.getLogger(MyDriverRelink.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(MyDriverPromise.class.getName()).log(Level.SEVERE, null, ex);
     }
   } // algorithmSettings
 
@@ -95,10 +95,10 @@ public class MyDriverRelink extends Experiment {
    * @throws IOException
    */
   public static void main(String[] args) throws JMException, IOException {
-    MyDriverRelink exp = new MyDriverRelink();
+    MyDriverPromise exp = new MyDriverPromise();
 
     //名称中避免使用下划线_，因为改名称会被用于生成latex表格
-    exp.experimentName_ = "RelinkSixMethods";
+    exp.experimentName_ = "PromiseSixMethods";
 
     exp.algorithmNameList_ = new String[]{
             "NSGAII",
@@ -113,22 +113,50 @@ public class MyDriverRelink extends Experiment {
 
 
     exp.problemList_ = new String[]{
-            "ApacheKNN",
-            "SafeKNN",
-            "ZxingKNN",
+            "ant17J48",
+            "camel16J48",
+            "ivy20J48",
+            "jedit40J48",
+            "lucene24J48",
+            "poi30J48",
+            "synapse12J48",
+            "velocity16J48",
+            "xalan26J48",
+            "xerces14J48",
 
-            "ApacheLR",
-            "SafeLR",
-            "ZxingLR",
 
-            "ApacheJ48",
-            "SafeJ48",
-            "ZxingJ48",
+            "ant17KNN",
+            "camel16KNN",
+            "ivy20KNN",
+            "jedit40KNN",
+            "lucene24KNN",
+            "poi30KNN",
+            "synapse12KNN",
+            "velocity16KNN",
+            "xalan26KNN",
+            "xerces14KNN",
 
-            "ApacheNB",
-            "SafeNB",
-            "ZxingNB"
+            "ant17LR",
+            "camel16LR",
+            "ivy20LR",
+            "jedit40LR",
+            "lucene24LR",
+            "poi30LR",
+            "synapse12LR",
+            "velocity16LR",
+            "xalan26LR",
+            "xerces14LR",
 
+            "ant17NB",
+            "camel16NB",
+            "ivy20NB",
+            "jedit40NB",
+            "lucene24NB",
+            "poi30NB",
+            "synapse12NB",
+            "velocity16NB",
+            "xalan26NB",
+            "xerces14NB"
     };
 
     //这块需要好好研究下
@@ -136,7 +164,7 @@ public class MyDriverRelink extends Experiment {
 
 
     //”HV” , ”SPREAD” , ”IGD” , ”EPSILON”
-    exp.indicatorList_ = new String[]{"HV"};
+    exp.indicatorList_ = new String[]{"HV" , "SPREAD"  , "EPSILON"};
 
     int numberOfAlgorithms = exp.algorithmNameList_.length;
 
@@ -157,6 +185,11 @@ public class MyDriverRelink extends Experiment {
     int numberOfThreads ;
     exp.runExperiment(numberOfThreads = 10) ;
 
+    System.out.println("开始计算指标.....");
+
+
+
+
 
     exp.generateQualityIndicators() ;
 
@@ -171,10 +204,20 @@ public class MyDriverRelink extends Experiment {
     boolean notch ;
 
     // Configuring scripts for SafeKNN
-    rows = 1;
-    columns = 3 ;
-    prefix = new String("RelinkKNN");
-    problems = new String[]{"ApacheKNN","SafeKNN","ZxingKNN"} ;
+    rows = 5;
+    columns = 2 ;
+    prefix = new String("PROMISEJ48");
+    problems = new String[]{"ant17J48",
+            "camel16J48",
+            "ivy20J48",
+            "jedit40J48",
+            "lucene24J48",
+            "poi30J48",
+            "synapse12J48",
+            "velocity16J48",
+            "xalan26J48",
+            "xerces14J48"
+    } ;
 
     //1. 也就是说这里的rows columns的成绩决定了需要解决的问题的个数, 比如有三个问题，那么可以设定为1x3的格局
     //This method generates R scripts which produce .eps files containing rows × columns boxplots of
@@ -182,6 +225,7 @@ public class MyDriverRelink extends Experiment {
     //the list of problems passed as third parameter
     //所生成的boxplot只是针对problems列表提供的问题在所有方法上的实验结果
     exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch = false, exp) ;
+    exp.generateRWilcoxonScripts(problems, prefix, exp) ;
 
     //2. 如果需要分门别类的针对绘制关于问题的boxplot可以多次调用该函数并提供不同的布局
     //e.g., 这里AEEEM中有5个问题，可以选择2x3 也可以选择1*5等等
@@ -192,35 +236,68 @@ public class MyDriverRelink extends Experiment {
     exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch = false, exp) ;
     */
 
-    rows = 1;
-    columns = 3 ;
-    prefix = new String("RelinkLR");
-    problems = new String[]{"ApacheLR","SafeLR","ZxingLR"} ;
+    rows = 5;
+    columns = 2 ;
+    prefix = new String("PROMISEKNN");
+    problems = new String[]{  "ant17KNN",
+            "camel16KNN",
+            "ivy20KNN",
+            "jedit40KNN",
+            "lucene24KNN",
+            "poi30KNN",
+            "synapse12KNN",
+            "velocity16KNN",
+            "xalan26KNN",
+            "xerces14KNN"} ;
     exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch = false, exp) ;
-
-
-    rows = 1;
-    columns = 3 ;
-    prefix = new String("RelinkJ48");
-    problems = new String[]{"ApacheJ48","SafeJ48","ZxingJ48"} ;
-    exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch = false, exp) ;
-
-
-    rows = 1;
-    columns = 3 ;
-    prefix = new String("RelinkNB");
-    problems = new String[]{"ApacheNB","SafeNB","ZxingNB"} ;
-    exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch = false, exp) ;
-
-
     exp.generateRWilcoxonScripts(problems, prefix, exp) ;
+
+    rows = 5;
+    columns = 2 ;
+    prefix = new String("PROMISELR");
+    problems = new String[]{ "ant17LR",
+            "camel16LR",
+            "ivy20LR",
+            "jedit40LR",
+            "lucene24LR",
+            "poi30LR",
+            "synapse12LR",
+            "velocity16LR",
+            "xalan26LR",
+            "xerces14LR"} ;
+    exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch = false, exp) ;
+    exp.generateRWilcoxonScripts(problems, prefix, exp) ;
+
+    rows = 5;
+    columns = 2 ;
+    prefix = new String("PROMISENB");
+    problems = new String[]{"ant17NB",
+            "camel16NB",
+            "ivy20NB",
+            "jedit40NB",
+            "lucene24NB",
+            "poi30NB",
+            "synapse12NB",
+            "velocity16NB",
+            "xalan26NB",
+            "xerces14NB"} ;
+    exp.generateRBoxplotScripts(rows, columns, problems, prefix, notch = false, exp) ;
+    exp.generateRWilcoxonScripts(problems, prefix, exp) ;
+
+
+
+    //重新设置结果前缀
+    prefix="FriedmanPROMISE";
+
+
 
 
     // Applying Friedman test
     Friedman test = new Friedman(exp);
-   // test.executeTest("EPSILON");
+    test.executeTest("EPSILON");
     test.executeTest("HV");
-    //test.executeTest("SPREAD");
+   test.executeTest("SPREAD");
+
 
     double endTime=System.currentTimeMillis();
     System.out.println("总共用时间:"+ (endTime-initTime));
