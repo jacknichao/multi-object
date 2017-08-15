@@ -2,6 +2,7 @@
 bin/
 out/
 libs/
+!libs/config.properties
 
 
 #忽略.idea .settings下的所有文件
