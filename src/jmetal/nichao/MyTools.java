@@ -2,6 +2,10 @@ package jmetal.nichao;
 
 import jmetal.encodings.variable.Int;
 
+import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
@@ -182,8 +186,8 @@ public class MyTools {
 
         Properties prop = new Properties();
         try {
-            prop.load(MyTools.class.getClassLoader()
-                    .getResourceAsStream("config.properties"));
+
+            prop.load(new FileInputStream("config.properties"));
            datasetBase =prop.get("basepath")+"";
 
         } catch(Exception e) {

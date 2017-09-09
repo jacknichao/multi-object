@@ -8,7 +8,7 @@ libs/
 #忽略.idea .settings下的所有文件
 .idea/
 .settings/
-
+src/META-INF/
 
 #忽略results中的所有文件，该文件夹用于保存中间输出的结果
 results/

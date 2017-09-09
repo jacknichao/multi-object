@@ -22,6 +22,7 @@
 package jmetal.nichao;
 
 import jmetal.core.Algorithm;
+import jmetal.encodings.variable.Int;
 import jmetal.experiments.Experiment;
 import jmetal.experiments.Settings;
 import jmetal.experiments.util.Friedman;
@@ -98,7 +99,7 @@ public class MyDriverRelink extends Experiment {
     MyDriverRelink exp = new MyDriverRelink();
 
     //名称中避免使用下划线_，因为改名称会被用于生成latex表格
-    exp.experimentName_ = "RelinkSixMethods";
+    exp.experimentName_ = Driver.infoMap.get("experimentName_");
 
     exp.algorithmNameList_ = new String[]{
             "NSGAII",
@@ -140,22 +141,22 @@ public class MyDriverRelink extends Experiment {
 
     int numberOfAlgorithms = exp.algorithmNameList_.length;
 
-    exp.experimentBaseDirectory_ = "/home/jacknichao/ideaProjects/multi-object/results/" +
+    exp.experimentBaseDirectory_ = Driver.infoMap.get("experimentBaseDirectory_") +"/"+
                                    exp.experimentName_;
     exp.paretoFrontDirectory_ = "";
 
     exp.algorithmSettings_ = new Settings[numberOfAlgorithms];
 
     //exp.independentRuns_ = 100;
-    exp.independentRuns_ = 10;
+    exp.independentRuns_ = Integer.parseInt(Driver.infoMap.get("independentRuns_"));
 
     exp.initExperiment();
 
     double initTime=System.currentTimeMillis();
 
     // Run the experiments
-    int numberOfThreads ;
-    exp.runExperiment(numberOfThreads = 10) ;
+    int numberOfThreads= Integer.parseInt(Driver.infoMap.get("numberOfThreads"));
+    exp.runExperiment(numberOfThreads) ;
 
     System.out.println("开始计算指标.....");
 
