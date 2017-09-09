@@ -64,6 +64,7 @@ public abstract class BaseProblemImpl extends Problem {
 
 		try {
 			Instances all = ConverterUtils.DataSource.read(MyTools.problemDataFullPath(problemName_));
+
 			all.setClassIndex(all.numAttributes() - 1);
 
 			//这里设置变量的个数
@@ -78,8 +79,8 @@ public abstract class BaseProblemImpl extends Problem {
 			}
 
 
-			Random rand = new Random(1);
-			all.randomize(rand);
+			//增加随机性，不指定随机因子，从而可以保证多次运行结果不一样
+			all.randomize(new Random());
 			if (all.classAttribute().isNominal()) {
 				all.stratify(10);
 			}
