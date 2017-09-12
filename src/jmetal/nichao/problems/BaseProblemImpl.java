@@ -5,6 +5,7 @@ import jmetal.core.Solution;
 import jmetal.core.Variable;
 import jmetal.encodings.solutionType.BinarySolutionType;
 import jmetal.encodings.variable.Binary;
+import jmetal.nichao.Driver;
 import jmetal.nichao.MyTools;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
@@ -79,8 +80,8 @@ public abstract class BaseProblemImpl extends Problem {
 			}
 
 
-			//增加随机性，不指定随机因子，从而可以保证多次运行结果不一样
-			all.randomize(new Random());
+			//增加随机性，随机因子有配置文件提供，从而可以保证多次运行结果不一样
+			all.randomize(new Random(Integer.parseInt(Driver.infoMap.get("randomIndex"))));
 			if (all.classAttribute().isNominal()) {
 				all.stratify(10);
 			}

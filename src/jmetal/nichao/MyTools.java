@@ -1,14 +1,7 @@
 package jmetal.nichao;
 
-import jmetal.encodings.variable.Int;
-
-import java.io.FileInputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Properties;
 
 /**
  * Created by ChaoNi on 2017/7/29.
@@ -182,17 +175,9 @@ public class MyTools {
         problemToArffName.put("xerces14J48","xerces14");
         problemToArffName.put("xerces14NB","xerces14");
 
+        datasetBase=Driver.infoMap.get("basepath");
 
 
-        Properties prop = new Properties();
-        try {
-
-            prop.load(new FileInputStream("config.properties"));
-           datasetBase =prop.get("basepath")+"";
-
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
     }
 
 
