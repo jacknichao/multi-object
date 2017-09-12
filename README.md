@@ -6,7 +6,7 @@ The aim of this project is to configure out which one of multi-objective optimiz
 
 
 ##USAGE (IDEA):
-1) git clone https://github.com/jacknichao/multi-object
+1) git clone https://github.com/jacknichao/multi-object.git
 
 2) import this project with IDEA
 
@@ -21,6 +21,6 @@ The aim of this project is to configure out which one of multi-objective optimiz
 
 7) put config.properties and multi-object.jar in same directory
 
-8) write down this command 'java -jar multi-object', then press the return key, 
+8) write down this command 'java -jar multi-object.jar', then press the return key, 
    
 9) up here, you will see running informations on the terminal screen 
